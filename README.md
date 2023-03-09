@@ -1,7 +1,7 @@
 # Log4WCL
 Tool for WCL Log Analyzing
 
-## provide
+## Provide
 #### Log split
 ```c#
 WCLParser p = new WCLParser();
