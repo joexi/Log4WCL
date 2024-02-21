@@ -20,8 +20,8 @@ foreach (var file in files)
 ```
 #### Log Modify
 ``` c#
- WCLParser p = new WCLParser();
- p.Parse("D:/4.txt");
+WCLParser p = new WCLParser();
+p.Parse("D:/4.txt");
 WCLLogger.LogDPS(WCLParser.Events);
 WCLModifierDamage mod = new WCLModifierDamage();
 mod.DamageSrcSkillName = new string[] { "\"内部腐烂\"" };
