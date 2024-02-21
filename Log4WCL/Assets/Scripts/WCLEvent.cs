@@ -58,20 +58,35 @@ public enum EWCLEventType
     ENCHANT_APPLIED,
     COMBATANT_INFO,
     ENCHANT_REMOVED,
+    UNKNOWN = 999,
 }
 public class WCLEvent
 {
     public static System.Collections.Generic.List<string> TypeSet = new System.Collections.Generic.List<string>();
     public DateTime Date;
+    public string SrcData;
     public string[] EventData;
+    public string EventName;
     public EWCLEventType Type;
 
     public WCLMember Member;
     public WCLMember Target;
     public WCLCombat Combat;
+
+    public override string ToString()
+    {
+        return Type + "|" + Member;
+    }
+
     public WCLEvent(string data)
     {
+        this.SrcData = data;
         int index = data.IndexOf("  ");
+        if (index < 0)
+        {
+            this.Type = EWCLEventType.UNKNOWN;
+            return;
+        }
         var d = data.Substring(0, index);
         var md = d.Split(' ');
         var dt = md[0].Split('/');
@@ -145,6 +160,8 @@ public class WCLEvent
             case EWCLEventType.SPELL_DAMAGE:
             case EWCLEventType.SWING_DAMAGE:
             case EWCLEventType.SPELL_HEAL:
+            case EWCLEventType.SPELL_PERIODIC_DAMAGE:
+            case EWCLEventType.SPELL_BUILDING_DAMAGE:
                 return int.Parse(EventData[28]);
             case EWCLEventType.SWING_DAMAGE_LANDED:
                 return int.Parse(EventData[18]);
@@ -152,6 +169,43 @@ public class WCLEvent
                 return 1;
         }
         return 0;
+    }
+
+    public string GetEventValue(int index)
+    {
+        if (EventData.Length > index)
+        {
+            return EventData[index];
+        }
+        return string.Empty;
+    }
+
+    public void SetEventValue(int v)
+    {
+        switch (this.Type)
+        {
+            case EWCLEventType.SPELL_DAMAGE:
+            case EWCLEventType.SWING_DAMAGE:
+            case EWCLEventType.SPELL_HEAL:
+            case EWCLEventType.SPELL_PERIODIC_DAMAGE:
+            case EWCLEventType.SPELL_BUILDING_DAMAGE:
+                EventData[28] = v.ToString();
+                break;
+            case EWCLEventType.SWING_DAMAGE_LANDED:
+                EventData[18] = v.ToString();
+                break;
+            case EWCLEventType.UNIT_DIED:
+                break;
+        }
+        UpdateSrc();
+    }
+
+    public void UpdateSrc()
+    {
+        if (EventData.Length > 0)
+        {
+            this.SrcData = this.Date.ToString("MM/dd HH:mm:ss.fff") + "  " + string.Join(",", EventData);
+        }
     }
 
     public string GetMemberType()
@@ -175,9 +229,9 @@ public class WCLEvent
     }
 
     public bool IsDamage()
-    { 
-        return this.Type == EWCLEventType.SPELL_DAMAGE || 
-            this.Type == EWCLEventType.SWING_DAMAGE || 
+    {
+        return this.Type == EWCLEventType.SPELL_DAMAGE ||
+            this.Type == EWCLEventType.SWING_DAMAGE ||
             this.Type == EWCLEventType.SWING_DAMAGE_LANDED ||
             this.Type == EWCLEventType.ENVIRONMENTAL_DAMAGE ||
             this.Type == EWCLEventType.SPELL_PERIODIC_DAMAGE ||

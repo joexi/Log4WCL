@@ -77,49 +77,59 @@ public class WCLParser
             e.Combat = combat;
             Events.Add(e);
         }
-        //foreach (var cbt in Combats)
-        //{
-        //    WCLLogger.LogDeath(cbt);
-        //    //WCLLogger.LogDPS(cbt);
-        //    //WCLLogger.LogHPS(cbt);
-        //}
-
         foreach (var cbt in Combats)
         {
-            Debug.Log("======================" + cbt.CombatName + "=========================");
-            if (cbt.CombatName.Contains("弗蕾亚"))
-            {
-                Debug.Log("======================弗蕾亚无效伤害(P1)=========================");
-
-                var date = WCLLogger.GetFlyP2Time(cbt);
-                Dictionary<WCLMember, long> dps = new Dictionary<WCLMember, long>();
-                foreach (var e in Events)
-                {
-                    if ((date - e.Date).TotalSeconds > 0 && e.IsDamage() && e.Target != null && e.Target.MemberName.Contains("弗蕾亚"))
-                    {
-                        if (!dps.ContainsKey(e.Member))
-                        {
-                            dps[e.Member] = 0;
-                        }
-                        dps[e.Member] += e.GetEventValue();
-                        //e.Log();
-                    }
-                }
-                List<KeyValuePair<WCLMember, long>> list = new List<KeyValuePair<WCLMember, long>>();
-                foreach (var v in dps)
-                {
-                    list.Add(v);
-                }
-                list.Sort((a, b) =>
-                {
-                    return b.Value.CompareTo(a.Value);
-                });
-                foreach (var v in list)
-                {
-                    Debug.Log("dmg:" + " " + v.Key.MemberName + " " + v.Value);
-                }
-            }
+            //WCLLogger.LogDeath(cbt);
+            //WCLLogger.LogDPS(cbt);
+            //WCLLogger.LogHPS(cbt);
         }
+
+        //foreach (var cbt in Combats)
+        //{
+        //    Debug.Log("======================" + cbt.CombatName + "=========================");
+        //    if (cbt.CombatName.Contains("弗蕾亚"))
+        //    {
+        //        Debug.Log("======================弗蕾亚无效伤害(P1)=========================");
+
+        //        var date = WCLLogger.GetFlyP2Time(cbt);
+        //        Dictionary<WCLMember, long> dps = new Dictionary<WCLMember, long>();
+        //        foreach (var e in Events)
+        //        {
+        //            if ((date - e.Date).TotalSeconds > 0 && e.IsDamage() && e.Target != null && e.Target.MemberName.Contains("弗蕾亚"))
+        //            {
+        //                if (!dps.ContainsKey(e.Member))
+        //                {
+        //                    dps[e.Member] = 0;
+        //                }
+        //                dps[e.Member] += e.GetEventValue();
+        //                //e.Log();
+        //            }
+        //        }
+        //        List<KeyValuePair<WCLMember, long>> list = new List<KeyValuePair<WCLMember, long>>();
+        //        foreach (var v in dps)
+        //        {
+        //            list.Add(v);
+        //        }
+        //        list.Sort((a, b) =>
+        //        {
+        //            return b.Value.CompareTo(a.Value);
+        //        });
+        //        foreach (var v in list)
+        //        {
+        //            Debug.Log("dmg:" + " " + v.Key.MemberName + " " + v.Value);
+        //        }
+        //    }
+        //}
+    }
+
+    public static void Save(string path)
+    {
+        string[] fileContent = new string[Events.Count];
+        for(int i = 0; i< Events.Count;i++)
+        {
+            fileContent[i] = Events[i].SrcData;
+        }
+        File.WriteAllLines(path, fileContent);
     }
 
     public void Clear()

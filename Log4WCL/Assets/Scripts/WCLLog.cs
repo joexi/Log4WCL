@@ -99,6 +99,42 @@ public class WCLLogger
         }
     }
 
+    public static void LogDPS(List<WCLEvent> events)
+    {
+        Dictionary<WCLMember, double> count = new Dictionary<WCLMember, double>();
+        var duration = (events[events.Count - 1].Date - events[0].Date).TotalSeconds;
+        foreach (var e in events)
+        {
+            if (e.IsDamage())
+            {
+                if (e.Member != null && e.Member.Type == EMemberType.Player)
+                {
+                    if (!count.ContainsKey(e.Member))
+                    {
+                        count[e.Member] = e.GetEventValue() / duration;
+                    }
+                    else
+                    {
+                        count[e.Member] += e.GetEventValue() / duration;
+                    }
+                }
+            }
+        }
+        List<KeyValuePair<WCLMember, double>> list = new List<KeyValuePair<WCLMember, double>>();
+        foreach (var v in count)
+        {
+            list.Add(v);
+        }
+        list.Sort((a, b) =>
+        {
+            return b.Value.CompareTo(a.Value);
+        });
+        foreach (var v in list)
+        {
+            Debug.Log("dps:" + " " + v.Key.MemberName + " " + v.Value);
+        }
+    }
+
     public static System.DateTime GetFirstDiedTime(WCLCombat combat)
     {
         foreach (var e in WCLParser.Events)
