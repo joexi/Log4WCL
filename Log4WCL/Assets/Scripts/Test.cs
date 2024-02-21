@@ -32,7 +32,11 @@ public class Test : MonoBehaviour
         mod.Value = 1000;
         mod.Run();
         WCLLogger.LogDPS(WCLParser.Events);
-        WCLParser.Save("D:/5.txt");
+
+        WCLModifyName mod2 = new WCLModifyName();
+        mod2.Run();
+        WCLLogger.LogDPS(WCLParser.Events);
+        WCLParser.Save("D:/6.txt");
 
         //WCLParser.Save("D:/5.txt");
 

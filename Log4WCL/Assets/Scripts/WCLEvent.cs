@@ -58,6 +58,8 @@ public enum EWCLEventType
     ENCHANT_APPLIED,
     COMBATANT_INFO,
     ENCHANT_REMOVED,
+    CHALLENGE_MODE_END,
+    CHALLENGE_MODE_START,
     UNKNOWN = 999,
 }
 public class WCLEvent
@@ -127,13 +129,22 @@ public class WCLEvent
 
     public void InitMember()
     {
+        if (this.Type == EWCLEventType.COMBAT_LOG_VERSION ||
+            this.Type == EWCLEventType.CHALLENGE_MODE_END ||
+            this.Type == EWCLEventType.CHALLENGE_MODE_START ||
+            this.Type == EWCLEventType.COMBATANT_INFO)
+        {
+            return;
+        }
         var casterType = this.GetMemberType();
         var casterName = this.GetMemberName();
 
+        
         if (!WCLParser.MembersDic.ContainsKey(casterName))
         {
             WCLMember member = new WCLMember(casterType, casterName);
             WCLParser.Members.Add(member);
+            //Debug.LogError((WCLParser.Events.Count + 1) +" "  + member.MemberName);
             WCLParser.MembersDic[casterName] = member;
         }
         this.Member = WCLParser.MembersDic[casterName];
